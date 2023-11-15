@@ -3,4 +3,5 @@
     <style name="Theme.HoroscApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/secondary</item>
     </style>
+
 </resources>

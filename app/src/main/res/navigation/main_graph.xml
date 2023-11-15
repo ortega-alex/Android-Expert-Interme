@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_horoscope" />
     <fragment
         android:id="@+id/lockFragment"
-        android:name="com.dev.horoscapp.ui.lock.LockFragment"
+        android:name="com.dev.horoscapp.ui.luck.LuckFragment"
         android:label="fragment_lock"
         tools:layout="@layout/fragment_lock" />
     <fragment
