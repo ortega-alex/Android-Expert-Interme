@@ -1,6 +1,8 @@
 package com.dev.horoscapp.ui.luck
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +14,13 @@ import android.view.animation.DecelerateInterpolator
 import androidx.core.animation.doOnEnd
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.aristidevs.horoscapp.ui.core.listeners.OnSwipeTouchListener
 import com.dev.horoscapp.R
 import com.dev.horoscapp.databinding.FragmentLockBinding
+import com.dev.horoscapp.ui.providers.RandomCardProvider
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Random
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LuckFragment : Fragment() {
@@ -23,17 +28,51 @@ class LuckFragment : Fragment() {
     private var _binding: FragmentLockBinding? = null
     private val binding get() = _binding!!
 
+    @Inject
+    lateinit var randomCardPrivider: RandomCardProvider
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUi()
     }
 
     private fun initUi() {
+        preparePrediction()
         initListeners()
     }
 
+    private fun preparePrediction() {
+        val currentLuck = randomCardPrivider.getLucky()
+        currentLuck?.let {
+            val currentPrediction = getString(it.text)
+            binding.tvLucky.text = currentPrediction
+            binding.ivLuckyCard.setImageResource(it.image)
+            binding.tvShare.setOnClickListener { shareResult(currentPrediction) }
+        }
+    }
+
+    private fun shareResult(prediction: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, prediction)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
-        binding.ivRouletter.setOnClickListener { spinRouletter() }
+        // binding.ivRouletter.setOnClickListener { spinRouletter() }
+        binding.ivRouletter.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
+            override fun onSwipeRight() {
+                spinRouletter()
+            }
+
+            override fun onSwipeLeft() {
+                spinRouletter()
+            }
+        })
     }
 
     private fun spinRouletter() {
